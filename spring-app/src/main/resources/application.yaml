@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    azure:
+      eventhubs:
+        connection-string: ${EH_CONNECTION_STRING}
+        processor:
+          checkpoint-store:
+            account-name: ${STG_ACCOUNT_NAME}
+            account-key: ${STG_ACCOUNT_KEY}
+            container-name: ${STG_CONTAINER_NAME}
+    stream:
+      bindings:
+        consume-in-0:
+          destination: ${EH_NAME}
+          group: $Default
+        supply-out-0:
+          destination: ${EH_NAME}
+      eventhubs:
+        bindings:
+          consume-in-0:
+            consumer:
+              load-balancing:
+                strategy: greedy
+              checkpoint:
+                mode: MANUAL
+      function:
+        definition: consume;supply;
+      poller:
+        initial-delay: 0
+        fixed-delay: 1000
